@@ -1,3 +1,66 @@
+// Gamified Scroll Progress Bar
+let lastScrollPercentage = 0;
+const progressDebounce = 10; // milliseconds
+
+window.addEventListener('scroll', function() {
+    const now = Date.now();
+    if (now - lastScrollPercentage < progressDebounce) return;
+    lastScrollPercentage = now;
+    
+    const scrollProgressContainer = document.querySelector('.scroll-progress-container');
+    const scrollProgressBar = document.querySelector('.scroll-progress-bar');
+    const progressDot = document.querySelector('.scroll-progress-dot');
+    const progressNumber = document.querySelector('.scroll-progress-number');
+    
+    const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+    const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+    const scrollPercentage = (scrollTop / scrollHeight) * 100;
+    const roundedPercentage = Math.round(scrollPercentage);
+    
+    scrollProgressBar.style.width = scrollPercentage + '%';
+    progressNumber.textContent = roundedPercentage;
+    
+    // Dynamic color change based on progress
+    if (scrollPercentage < 30) {
+        scrollProgressBar.style.background = 'linear-gradient(90deg, #FF6B6B, #FF8E8E)';
+    } else if (scrollPercentage < 70) {
+        scrollProgressBar.style.background = 'linear-gradient(90deg, #FF8E8E, #FFC3C3)';
+    } else {
+        scrollProgressBar.style.background = 'linear-gradient(90deg, #FFC3C3, #FFE66D)';
+    }
+    
+    // Show/hide logic with more prominent appearance
+    if (scrollTop > 100 && scrollPercentage < 98) {
+        scrollProgressContainer.style.opacity = '1';
+        
+        // Celebration effect when reaching certain milestones
+        if (roundedPercentage % 25 === 0 && roundedPercentage !== 0) {
+            progressDot.style.animation = 'none';
+            void progressDot.offsetWidth; // Trigger reflow
+            progressDot.style.animation = 'pulse 0.5s 3';
+        }
+    } else {
+        scrollProgressContainer.style.opacity = '0';
+    }
+    
+    // Final push encouragement
+    if (scrollPercentage > 85) {
+        progressNumber.style.color = '#FFE66D';
+        progressNumber.style.textShadow = '0 0 5px rgba(255, 230, 109, 0.8)';
+        progressDot.style.boxShadow = '0 0 0 3px rgba(255, 255, 255, 0.9), 0 0 15px rgba(255, 230, 109, 1)';
+    }
+});
+
+// Initialize on load
+document.addEventListener('DOMContentLoaded', function() {
+    const scrollProgressContainer = document.querySelector('.scroll-progress-container');
+    setTimeout(() => {
+        scrollProgressContainer.style.transition = 'opacity 0.3s ease';
+    }, 1000);
+});
+
+
+
 // Dark/Light Mode Toggle
 let darkModeIcon = document.querySelector('#darkMode-icon');
 let menuIcon = document.querySelector('#menu-icon');
